@@ -9,12 +9,13 @@ sequenceDiagram
     participant W as Web App (Python/Flask)
     participant D as PostgreSQL Database
 
-    Note over A,V: Phase 1: Configuration
+    Note over A,V: Phase 1: Configuration (Root Token)
     A->>V: Enable AppRole & DB Engines
     A->>V: Configure DB Connection & Role
+    A->>V: Create CICD Policy & Generate Dynamic Token
 
-    Note over A,W: Phase 2: Secure Token Delivery & Async Execution
-    A->>V: Fetch RoleID & Generate SecretID
+    Note over A,W: Phase 2: Secure Token Delivery (CICD Token)
+    A->>V: Fetch RoleID & Generate SecretID (Using CICD Token)
     A->>V: Login via AppRole (X-Vault-Wrap-TTL)
     V-->>A: Wrapping Token (Single-Use, 60s)
     A->>W: Start App (Pipes Wrapping Token via stdin)
@@ -125,4 +126,4 @@ The application uses a `VaultManager` class and Vault's **Periodic Tokens** to e
 4.  **No SecretID in App**: The application never sees the `SecretID`. It only receives a short-lived (60s) wrapping token that can only be unwrapped once.
 
 ## Security Note
-This demo uses a `root` token for Ansible's interaction with Vault. In a production environment, Ansible should use a token with limited privileges specifically scoped for these management tasks. Dynamic DB credentials ensure that the application never has long-term credentials stored in its configuration.
+This demo originally used a `root` token for all Ansible interactions. It has since been updated to model least privilege: the initial setup playbook uses the `root` token to configure Vault and generate a restricted dynamic `cicd` token. The start-app playbook then drops its privileges and perfectly acts as the CI/CD pipeline role—using only the `cicd` token to fetch credentials and bootstrap the application. Dynamic DB credentials ensure that the application never has long-term credentials stored in its configuration.
