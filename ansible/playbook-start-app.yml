@@ -1,0 +1,52 @@
+---
+- name: Get AppRole Credentials and Start the App
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vault_addr: "http://localhost:8200"
+    vault_token: "root"
+    approle_name: "my-app-role"
+
+  tasks:
+    - name: Kill existing application process (if any)
+      shell: "pkill -f 'python3 main.py'"
+      failed_when: false
+
+    - name: Fetch RoleID
+      uri:
+        url: "{{ vault_addr }}/v1/auth/approle/role/{{ approle_name }}/role-id"
+        method: GET
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+      register: role_id_response
+
+    - name: Generate SecretID
+      uri:
+        url: "{{ vault_addr }}/v1/auth/approle/role/{{ approle_name }}/secret-id"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+      register: secret_id_response
+
+    - name: Login to AppRole and get Wrapped Token
+      uri:
+        url: "{{ vault_addr }}/v1/auth/approle/login"
+        method: POST
+        headers:
+          X-Vault-Wrap-TTL: "60s"
+        body_format: json
+        body:
+          role_id: "{{ role_id_response.json.data.role_id }}"
+          secret_id: "{{ secret_id_response.json.data.secret_id }}"
+      register: approle_login_response
+
+    - name: Run the application with Wrapped Vault Token via stdin
+      shell: |
+        nohup python3 main.py > app.log 2>&1 <<EOF &
+        {{ approle_login_response.json.wrap_info.token }}
+        EOF
+      args:
+        chdir: "../app"
+      environment:
+        VAULT_ADDR: "{{ vault_addr }}"
+        PYTHONUNBUFFERED: "1"

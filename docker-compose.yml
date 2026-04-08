@@ -1,0 +1,22 @@
+services:
+  vault:
+    # image: openbao/openbao:latest
+    image: hashicorp/vault:latest
+    container_name: vault-approle-demo
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "root"
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-demo
+    environment:
+      POSTGRES_USER: "vault_admin"
+      POSTGRES_PASSWORD: "vault_admin_password"
+      POSTGRES_DB: "myappdb"
+    ports:
+      - "5432:5432"

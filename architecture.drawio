@@ -1,0 +1,89 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+  <diagram id="VaultArchitecture" name="Page-1">
+    <mxGraphModel dx="1407" dy="389" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nqMZR2JAEEIRKld7MuuC-13" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(default, #787878);opacity=40;" parent="1" vertex="1">
+          <mxGeometry x="-139" y="180" width="150" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="HashiCorp Vault" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" parent="1" vertex="1">
+          <mxGeometry x="280" y="66" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="PostgreSQL&lt;br&gt;Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" parent="1" vertex="1">
+          <mxGeometry x="585" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="2. Fetches RoleID,&amp;nbsp;&lt;div&gt;generate corresponding SecretID,&lt;div&gt;logins to AppRole and get Periodic Token&lt;/div&gt;&lt;/div&gt;" style="endArrow=classic;html=1;exitX=0.983;exitY=0.106;exitDx=0;exitDy=0;entryX=0.005;entryY=0.631;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;exitPerimeter=0;" parent="1" source="nqMZR2JAEEIRKld7MuuC-12" target="3" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="160" y="199.64" as="sourcePoint" />
+            <mxPoint x="280" y="199.64" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9" value="" style="endArrow=classic;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="1" target="3" edge="1">
+          <mxGeometry x="-1" y="260" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="240" as="sourcePoint" />
+            <mxPoint x="20" y="100" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-24" value="Unwrap token or&lt;br&gt;refresh the Periodic Token&lt;br&gt;&lt;div&gt;(if needed)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="9">
+          <mxGeometry x="0.1559" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="10" value="" style="endArrow=classic;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.871;entryY=0.983;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1" target="3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="386" y="240" as="sourcePoint" />
+            <mxPoint x="386" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nqMZR2JAEEIRKld7MuuC-11" value="5. Request DB Creds (or&lt;div&gt;refresh them)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="10" vertex="1" connectable="0">
+          <mxGeometry x="-0.4429" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" value="6. Connect (Dynamic)" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="270" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nqMZR2JAEEIRKld7MuuC-12" value="Ansible&lt;br&gt;(start-app)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="-124" y="191" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-14" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(default, #787878);opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="-138" y="50" width="150" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-16" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(default, #787878);opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="264" y="224" width="150" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-13" value="Trusted entity" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-109" y="270" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-15" value="Admin entity" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-109" y="140" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-17" value="App entity" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="310" y="310" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-18" value="Ansible&lt;br&gt;(setup-vault)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" vertex="1" parent="1">
+          <mxGeometry x="-124" y="70" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-19" value="1. Configures (Once and forever)" style="endArrow=classic;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-4" y="90" as="sourcePoint" />
+            <mxPoint x="280" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-21" value="Web App&lt;br&gt;(Python/Flask)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d80073;fontColor=#ffffff;strokeColor=#A50040;" vertex="1" parent="1">
+          <mxGeometry x="280" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fkRui1LSsYup66qdysGJ-22" value="3. Wrapped Token (via stdin)&lt;div&gt;and start the app&lt;/div&gt;" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="nqMZR2JAEEIRKld7MuuC-12" target="fkRui1LSsYup66qdysGJ-21">
+          <mxGeometry x="0.0009" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-64.02000000000001" y="251" as="sourcePoint" />
+            <mxPoint x="279.98" y="270" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

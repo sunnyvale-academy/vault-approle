@@ -1,0 +1,104 @@
+---
+- name: Setup Vault AppRole and Database secrets
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vault_addr: "http://localhost:8200"
+    vault_token: "root"
+    approle_name: "my-app-role"
+    policy_name: "my-app-policy"
+    db_name: "myappdb"
+
+  tasks:
+    - name: Check if Vault is up
+      uri:
+        url: "{{ vault_addr }}/v1/sys/health"
+        method: GET
+      register: vault_health
+      until: vault_health.status == 200
+      retries: 10
+      delay: 5
+
+    - name: Enable AppRole auth method
+      uri:
+        url: "{{ vault_addr }}/v1/sys/auth/approle"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          type: approle
+        status_code: [204, 400] # 400 if already enabled
+
+    - name: Enable Database secret engine
+      uri:
+        url: "{{ vault_addr }}/v1/sys/mounts/database"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          type: database
+        status_code: [204, 400] # 400 if already enabled
+
+    - name: Configure PostgreSQL connection in Vault
+      uri:
+        url: "{{ vault_addr }}/v1/database/config/postgresql"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          plugin_name: "postgresql-database-plugin"
+          allowed_roles: "my-db-role"
+          connection_url: "postgresql://{{ '{{' }}username{{ '}}' }}:{{ '{{' }}password{{ '}}' }}@postgres:5432/myappdb?sslmode=disable"
+          username: "vault_admin"
+          password: "vault_admin_password"
+        status_code: [200, 204]
+
+    - name: Create Database Role for dynamic credentials
+      uri:
+        url: "{{ vault_addr }}/v1/database/roles/my-db-role"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          db_name: "postgresql"
+          creation_statements: "CREATE ROLE \"{{ '{{' }}name{{ '}}' }}\" WITH LOGIN PASSWORD '{{ '{{' }}password{{ '}}' }}' VALID UNTIL '{{ '{{' }}expiration{{ '}}' }}'; GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{ '{{' }}name{{ '}}' }}\";"
+          default_ttl: "1h"
+          max_ttl: "24h"
+        status_code: [200, 204]
+
+    - name: Update policy for the AppRole (include DB credentials)
+      uri:
+        url: "{{ vault_addr }}/v1/sys/policy/{{ policy_name }}"
+        method: PUT
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          policy: |
+            path "secret/data/my-app/*" {
+              capabilities = ["read"]
+            }
+            path "database/creds/my-db-role" {
+              capabilities = ["read"]
+            }
+        status_code: 204
+
+    - name: Create the AppRole role
+      uri:
+        url: "{{ vault_addr }}/v1/auth/approle/role/{{ approle_name }}"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          token_policies: "{{ policy_name }}"
+          token_ttl: "1h"
+          token_max_ttl: "0"  # Set to 0 to allow indefinite renewal when period is set
+          token_period: "1h"
+          secret_id_ttl: "5m"
+          secret_id_num_uses: 1
+        status_code: 204
