@@ -102,3 +102,43 @@
           secret_id_ttl: "5m"
           secret_id_num_uses: 1
         status_code: 204
+
+    - name: Create CICD policy for AppRole operations
+      uri:
+        url: "{{ vault_addr }}/v1/sys/policy/cicd"
+        method: PUT
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          policy: |
+            path "auth/approle/role/{{ approle_name }}/role-id" {
+              capabilities = ["read"]
+            }
+            path "auth/approle/role/{{ approle_name }}/secret-id" {
+              capabilities = ["update"]
+            }
+        status_code: 204
+
+    - name: Revoke existing CICD token (if any)
+      uri:
+        url: "{{ vault_addr }}/v1/auth/token/revoke"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          token: "cicd"
+      failed_when: false
+
+    - name: Create a CICD vault token
+      uri:
+        url: "{{ vault_addr }}/v1/auth/token/create"
+        method: POST
+        headers:
+          X-Vault-Token: "{{ vault_token }}"
+        body_format: json
+        body:
+          policies: ["cicd"]
+          id: "cicd"
+        status_code: 200
