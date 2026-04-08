@@ -4,7 +4,7 @@
   gather_facts: false
   vars:
     vault_addr: "http://localhost:8200"
-    vault_token: "cicd"
+    vault_token: "{{ lookup('file', '.cicd_token') }}"
     approle_name: "my-app-role"
 
   tasks:

@@ -120,17 +120,6 @@
             }
         status_code: 204
 
-    - name: Revoke existing CICD token (if any)
-      uri:
-        url: "{{ vault_addr }}/v1/auth/token/revoke"
-        method: POST
-        headers:
-          X-Vault-Token: "{{ vault_token }}"
-        body_format: json
-        body:
-          token: "cicd"
-      failed_when: false
-
     - name: Create a CICD vault token
       uri:
         url: "{{ vault_addr }}/v1/auth/token/create"
@@ -140,5 +129,11 @@
         body_format: json
         body:
           policies: ["cicd"]
-          id: "cicd"
         status_code: 200
+      register: cicd_token_response
+
+    - name: Save CICD vault token locally for start playbook
+      copy:
+        content: "{{ cicd_token_response.json.auth.client_token }}"
+        dest: ".cicd_token"
+        mode: "0600"
