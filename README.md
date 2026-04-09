@@ -89,6 +89,8 @@ This creates a "separation of concerns" where the app only uses a short-lived de
 | **App VAULT_TOKEN**          | Vault (Unwrapped by Application)       | Application        | `1h` (Periodic, Renewable indefinitely)| Authorize the application to fetch dynamic database credentials.                          |
 | **Database Credentials**     | Vault DB Engine                        | Application        | Default `1h` (Max `24h`)              | Authenticate PostgreSQL connections dynamically.                                          |
 
+> [!NOTE]
+> **What happens if the `CICD Token` expires?** If the token used by `playbook-start-app.yml` expires, it will fail to start the application. In a real-world production environment, the CI/CD pipeline natively authenticates to Vault on every execution (e.g., via Kubernetes Auth or JWT/OIDC for Jenkins/GitHub Actions) to fetch a *fresh* short-lived token per job. For this lab, if the token expires (typically after 32 days), you simulate a fresh pipeline run by re-running the setup playbook (`ansible-playbook -i ansible/inventory ansible/playbook-setup-vault.yml`) to issue a new valid CICD token.
 ## Overview
 
 ## Prerequisites
