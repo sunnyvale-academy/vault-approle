@@ -91,6 +91,24 @@ This creates a "separation of concerns" where the app only uses a short-lived de
 
 > [!NOTE]
 > **What happens if the `CICD Token` expires?** If the token used by `playbook-start-app.yml` expires, it will fail to start the application. In a real-world production environment, the static CICD token is completely replaced by **Identity Federation via OIDC / JWT**. The CI/CD pipeline (e.g., GitHub Actions, GitLab CI/CD) natively passes its temporary runner identity to Vault on every execution to dynamically fetch a *fresh* short-lived token per job. For this lab, if the token expires (typically after 32 days), you simulate a fresh pipeline run by re-running the setup playbook (`ansible-playbook -i ansible/inventory ansible/playbook-setup-vault.yml`) to issue a new valid CICD token.
+
+### Lifecycle Timeline
+
+```mermaid
+timeline
+    title Token & Credential Lifecycles
+    section Phase 1 Setup
+      Infinite TTL : Root Token : Initial Vault Configuration
+      32 Days TTL : CICD Token : Setup by Root, used by Ansible to deploy
+    section Phase 2 Delivery
+      Infinite TTL : RoleID : App's Static Username
+      5 Min TTL (Single-Use) : SecretID : App's Dynamic Password
+      60 Sec TTL (Single-Use) : Wrapping Token : Secure transport layer for the final token
+    section Phase 3 Runtime
+      1 Hr TTL (Renewable) : App VAULT_TOKEN : Auth profile for the application
+      1 to 24 Hr TTL : Database Credentials : Auto-expiring Postgres Accounts
+```
+
 ## Overview
 
 ## Prerequisites
