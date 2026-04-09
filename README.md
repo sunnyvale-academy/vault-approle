@@ -90,7 +90,7 @@ This creates a "separation of concerns" where the app only uses a short-lived de
 | **Database Credentials**     | Vault DB Engine                        | Application        | Default `1h` (Max `24h`)              | Authenticate PostgreSQL connections dynamically.                                          |
 
 > [!NOTE]
-> **What happens if the `CICD Token` expires?** If the token used by `playbook-start-app.yml` expires, it will fail to start the application. In a real-world production environment, the CI/CD pipeline natively authenticates to Vault on every execution (e.g., via Kubernetes Auth or JWT/OIDC for Jenkins/GitHub Actions) to fetch a *fresh* short-lived token per job. For this lab, if the token expires (typically after 32 days), you simulate a fresh pipeline run by re-running the setup playbook (`ansible-playbook -i ansible/inventory ansible/playbook-setup-vault.yml`) to issue a new valid CICD token.
+> **What happens if the `CICD Token` expires?** If the token used by `playbook-start-app.yml` expires, it will fail to start the application. In a real-world production environment, the static CICD token is completely replaced by **Identity Federation via OIDC / JWT**. The CI/CD pipeline (e.g., GitHub Actions, GitLab CI/CD) natively passes its temporary runner identity to Vault on every execution to dynamically fetch a *fresh* short-lived token per job. For this lab, if the token expires (typically after 32 days), you simulate a fresh pipeline run by re-running the setup playbook (`ansible-playbook -i ansible/inventory ansible/playbook-setup-vault.yml`) to issue a new valid CICD token.
 ## Overview
 
 ## Prerequisites
