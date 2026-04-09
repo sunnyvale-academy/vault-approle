@@ -77,6 +77,18 @@ Instead:
 
 This creates a "separation of concerns" where the app only uses a short-lived delivery mechanism (the wrapped token) and then manages its own session lifecycle, while the high-privilege `SecretID` is never exposed to the application environment.
 
+### Summary of Tokens and Credentials
+
+| Credential / Token           | Issuer / Creator                       | Consumer           | TTL / Lifetime                        | Purpose                                                                                   |
+| :--------------------------- | :------------------------------------- | :----------------- | :------------------------------------ | :---------------------------------------------------------------------------------------- |
+| **Root Token**               | Vault (Startup)                        | Ansible (Setup)    | Infinite                              | Initial setup of Vault AppRole auth, policies, and DB secret engines.                     |
+| **CICD Token**               | Ansible (Setup) via Root               | Ansible (Start)    | System Default (32 days)              | Securely fetch `RoleID` and generate a `SecretID` under a restricted policy for app init. |
+| **RoleID**                   | Vault AppRole                          | Ansible (Start)    | Infinite                              | Static identifier acting as the username for the application.                             |
+| **SecretID**                 | Vault AppRole (via Ansible CICD Token) | Ansible (Start)    | `5m` (Single-use)                     | High-privilege dynamic password acting as the second factor for AppRole login.            |
+| **Wrapping Token**           | Vault (AppRole Login)                  | Application        | `60s` (Single-use)                    | Securely deliver the actual payload Vault Token to the application through `stdin`.       |
+| **App VAULT_TOKEN**          | Vault (Unwrapped by Application)       | Application        | `1h` (Periodic, Renewable indefinitely)| Authorize the application to fetch dynamic database credentials.                          |
+| **Database Credentials**     | Vault DB Engine                        | Application        | Default `1h` (Max `24h`)              | Authenticate PostgreSQL connections dynamically.                                          |
+
 ## Overview
 
 ## Prerequisites
